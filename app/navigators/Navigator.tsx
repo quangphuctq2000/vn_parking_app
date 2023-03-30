@@ -4,30 +4,23 @@ import React from "react"
 import { TextStyle, ViewStyle } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { Icon } from "../components"
-import { translate } from "../i18n"
-import { DemoCommunityScreen, DemoShowroomScreen, DemoDebugScreen } from "../screens"
-import { DemoPodcastListScreen } from "../screens/DemoPodcastListScreen"
+import { HomeScreen, BookingScreen } from "../screens"
 import { colors, spacing, typography } from "../theme"
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
+import { ParkingScreen } from "app/screens/ParkingScreen"
 
-export type DemoTabParamList = {
-  DemoCommunity: undefined
-  DemoShowroom: { queryIndex?: string; itemIndex?: string }
-  DemoDebug: undefined
-  DemoPodcastList: undefined
+export type TabParamList = {
+  HomeScreen: undefined
+  ParkingStationScreen: { queryIndex?: string; itemIndex?: string }
+  BookingScreen: undefined
+  ParkingScreen: undefined
 }
-
-/**
- * Helper for automatically generating navigation prop types for each route.
- *
- * More info: https://reactnavigation.org/docs/typescript/#organizing-types
- */
-export type DemoTabScreenProps<T extends keyof DemoTabParamList> = CompositeScreenProps<
-  BottomTabScreenProps<DemoTabParamList, T>,
+export type DemoTabScreenProps<T extends keyof TabParamList> = CompositeScreenProps<
+  BottomTabScreenProps<TabParamList, T>,
   AppStackScreenProps<keyof AppStackParamList>
 >
 
-const Tab = createBottomTabNavigator<DemoTabParamList>()
+const Tab = createBottomTabNavigator<TabParamList>()
 
 export function DemoNavigator() {
   const { bottom } = useSafeAreaInsets()
@@ -35,7 +28,7 @@ export function DemoNavigator() {
   return (
     <Tab.Navigator
       screenOptions={{
-        headerShown: false,
+        headerShown: true,
         tabBarHideOnKeyboard: true,
         tabBarStyle: [$tabBar, { height: bottom + 70 }],
         tabBarActiveTintColor: colors.text,
@@ -45,10 +38,10 @@ export function DemoNavigator() {
       }}
     >
       <Tab.Screen
-        name="DemoShowroom"
-        component={DemoShowroomScreen}
+        name="HomeScreen"
+        component={HomeScreen}
         options={{
-          tabBarLabel: translate("demoNavigator.componentsTab"),
+          tabBarLabel: "Home",
           tabBarIcon: ({ focused }) => (
             <Icon icon="components" color={focused && colors.tint} size={30} />
           ),
@@ -56,10 +49,10 @@ export function DemoNavigator() {
       />
 
       <Tab.Screen
-        name="DemoCommunity"
-        component={DemoCommunityScreen}
+        name="ParkingStationScreen"
+        component={ParkingScreen}
         options={{
-          tabBarLabel: translate("demoNavigator.communityTab"),
+          tabBarLabel: "ParkingStation",
           tabBarIcon: ({ focused }) => (
             <Icon icon="components" color={focused && colors.tint} size={30} />
           ),
@@ -67,10 +60,10 @@ export function DemoNavigator() {
       />
 
       <Tab.Screen
-        name="DemoPodcastList"
-        component={DemoPodcastListScreen}
+        name="BookingScreen"
+        component={BookingScreen}
         options={{
-          tabBarLabel: translate("demoNavigator.podcastListTab"),
+          tabBarLabel: "Booking",
           tabBarIcon: ({ focused }) => (
             <Icon icon="components" color={focused && colors.tint} size={30} />
           ),
@@ -78,6 +71,16 @@ export function DemoNavigator() {
       />
 
       <Tab.Screen
+        name="ParkingScreen"
+        component={BookingScreen}
+        options={{
+          tabBarLabel: "Parking",
+          tabBarIcon: ({ focused }) => (
+            <Icon icon="components" color={focused && colors.tint} size={30} />
+          ),
+        }}
+      />
+      {/* <Tab.Screen
         name="DemoDebug"
         component={DemoDebugScreen}
         options={{
@@ -86,7 +89,7 @@ export function DemoNavigator() {
             <Icon icon="components" color={focused && colors.tint} size={30} />
           ),
         }}
-      />
+      /> */}
     </Tab.Navigator>
   )
 }
@@ -106,5 +109,3 @@ const $tabBarLabel: TextStyle = {
   lineHeight: 16,
   flex: 1,
 }
-
-// @demo remove-file

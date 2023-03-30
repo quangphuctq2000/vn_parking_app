@@ -1,4 +1,6 @@
 import { Instance, SnapshotOut, types } from "mobx-state-tree"
+import { GoogleSignin } from "@react-native-google-signin/google-signin"
+import { api } from "app/services/api"
 
 export const AuthenticationStoreModel = types
   .model("AuthenticationStore")
@@ -28,6 +30,8 @@ export const AuthenticationStoreModel = types
     logout() {
       store.authToken = undefined
       store.authEmail = ""
+      GoogleSignin.signOut()
+      delete api.apisauce.headers["Authorization"]
     },
   }))
 

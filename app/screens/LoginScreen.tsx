@@ -1,71 +1,39 @@
 import { observer } from "mobx-react-lite"
-import React, { FC, useEffect, useMemo, useRef, useState } from "react"
-import { TextInput, TextStyle, ViewStyle } from "react-native"
-import { Button, Icon, Screen, Text, TextField, TextFieldAccessoryProps } from "../components"
+import React, { FC, useState } from "react"
+import { TextStyle, ViewStyle } from "react-native"
+import { Screen, Text } from "../components"
 import { useStores } from "../models"
 import { AppStackScreenProps } from "../navigators"
-import { colors, spacing } from "../theme"
+import { spacing } from "../theme"
+import { Button, TextField } from "react-native-ui-lib"
+import auth from "@react-native-firebase/auth"
+import { GoogleSignin } from "@react-native-google-signin/google-signin"
+import { api } from "app/services/api"
 
 interface LoginScreenProps extends AppStackScreenProps<"Login"> {}
+GoogleSignin.configure({
+  webClientId: "1012590666606-mimme0eesrjidp9dqrk0r3qi2aeg0k65.apps.googleusercontent.com",
+})
 
 export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_props) {
-  const authPasswordInput = useRef<TextInput>()
-
   const [authPassword, setAuthPassword] = useState("")
-  const [isAuthPasswordHidden, setIsAuthPasswordHidden] = useState(true)
-  const [isSubmitted, setIsSubmitted] = useState(false)
-  const [attemptsCount, setAttemptsCount] = useState(0)
+  const [authEmail, setAuthEmail] = useState("")
+
   const {
-    authenticationStore: { authEmail, setAuthEmail, setAuthToken, validationError },
+    authenticationStore: { setAuthToken },
   } = useStores()
 
-  useEffect(() => {
-    // Here is where you could fetch credentials from keychain or storage
-    // and pre-fill the form fields.
-    setAuthEmail("ignite@infinite.red")
-    setAuthPassword("ign1teIsAwes0m3")
-  }, [])
+  function login() {}
 
-  const error = isSubmitted ? validationError : ""
+  async function continuteWithGoogle() {
+    const { idToken } = await GoogleSignin.signIn()
+    const googleCredential = auth.GoogleAuthProvider.credential(idToken)
+    const result = await auth().signInWithCredential(googleCredential)
+    const accessToken = await result.user.getIdToken()
 
-  function login() {
-    setIsSubmitted(true)
-    setAttemptsCount(attemptsCount + 1)
-
-    if (validationError) return
-
-    // Make a request to your server to get an authentication token.
-    // If successful, reset the fields and set the token.
-    setIsSubmitted(false)
-    setAuthPassword("")
-    setAuthEmail("")
-
-    // We'll mock this with a fake token.
-    setAuthToken(String(Date.now()))
+    api.apisauce.setHeader("Authorization", `Bearer ${accessToken}`)
+    setAuthToken(accessToken)
   }
-
-  const PasswordRightAccessory = useMemo(
-    () =>
-      function PasswordRightAccessory(props: TextFieldAccessoryProps) {
-        return (
-          <Icon
-            icon={isAuthPasswordHidden ? "view" : "hidden"}
-            color={colors.palette.neutral800}
-            containerStyle={props.style}
-            size={20}
-            onPress={() => setIsAuthPasswordHidden(!isAuthPasswordHidden)}
-          />
-        )
-      },
-    [isAuthPasswordHidden],
-  )
-
-  useEffect(() => {
-    return () => {
-      setAuthPassword("")
-      setAuthEmail("")
-    }
-  }, [])
 
   return (
     <Screen
@@ -74,46 +42,23 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
       safeAreaEdges={["top", "bottom"]}
     >
       <Text testID="login-heading" tx="loginScreen.signIn" preset="heading" style={$signIn} />
-      <Text tx="loginScreen.enterDetails" preset="subheading" style={$enterDetails} />
-      {attemptsCount > 2 && <Text tx="loginScreen.hint" size="sm" weight="light" style={$hint} />}
+
+      <TextField placeholder={"Email"} onChangeText={setAuthEmail} value={authEmail} marginB-10 />
 
       <TextField
-        value={authEmail}
-        onChangeText={setAuthEmail}
-        containerStyle={$textField}
-        autoCapitalize="none"
-        autoComplete="email"
-        autoCorrect={false}
-        keyboardType="email-address"
-        labelTx="loginScreen.emailFieldLabel"
-        placeholderTx="loginScreen.emailFieldPlaceholder"
-        helper={error}
-        status={error ? "error" : undefined}
-        onSubmitEditing={() => authPasswordInput.current?.focus()}
-      />
-
-      <TextField
-        ref={authPasswordInput}
-        value={authPassword}
+        placeholder={"Password"}
         onChangeText={setAuthPassword}
-        containerStyle={$textField}
-        autoCapitalize="none"
-        autoComplete="password"
-        autoCorrect={false}
-        secureTextEntry={isAuthPasswordHidden}
-        labelTx="loginScreen.passwordFieldLabel"
-        placeholderTx="loginScreen.passwordFieldPlaceholder"
-        onSubmitEditing={login}
-        RightAccessory={PasswordRightAccessory}
+        maxLength={30}
+        secureTextEntry
+        value={authPassword}
+        marginB-10
       />
 
-      <Button
-        testID="login-button"
-        tx="loginScreen.tapToSignIn"
-        style={$tapButton}
-        preset="reversed"
-        onPress={login}
-      />
+      <Button onPress={login} label={"Tap to sign in"} marginB-10 />
+
+      <Button onPress={login} label={"Tap to sign up"} marginB-10 />
+
+      <Button onPress={continuteWithGoogle} label={"Continute with google"} marginB-10 />
     </Screen>
   )
 })
@@ -127,21 +72,6 @@ const $signIn: TextStyle = {
   marginBottom: spacing.small,
 }
 
-const $enterDetails: TextStyle = {
-  marginBottom: spacing.large,
-}
-
-const $hint: TextStyle = {
-  color: colors.tint,
-  marginBottom: spacing.medium,
-}
-
 const $textField: ViewStyle = {
   marginBottom: spacing.large,
 }
-
-const $tapButton: ViewStyle = {
-  marginTop: spacing.extraSmall,
-}
-
-// @demo remove-file
