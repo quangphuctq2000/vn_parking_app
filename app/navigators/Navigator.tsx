@@ -7,13 +7,12 @@ import { Icon } from "../components"
 import { HomeScreen, BookingScreen } from "../screens"
 import { colors, spacing, typography } from "../theme"
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
-import { ParkingScreen } from "app/screens/ParkingScreen"
+import { VehicleScreen } from "app/screens/VehicleScreen"
 
 export type TabParamList = {
   HomeScreen: undefined
-  ParkingStationScreen: { queryIndex?: string; itemIndex?: string }
-  BookingScreen: undefined
   ParkingScreen: undefined
+  VehicleScreen: undefined
 }
 export type DemoTabScreenProps<T extends keyof TabParamList> = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, T>,
@@ -48,33 +47,21 @@ export function DemoNavigator() {
         }}
       />
 
-      <Tab.Screen
-        name="ParkingStationScreen"
-        component={ParkingScreen}
-        options={{
-          tabBarLabel: "ParkingStation",
-          tabBarIcon: ({ focused }) => (
-            <Icon icon="components" color={focused && colors.tint} size={30} />
-          ),
-        }}
-      />
-
-      <Tab.Screen
-        name="BookingScreen"
-        component={BookingScreen}
-        options={{
-          tabBarLabel: "Booking",
-          tabBarIcon: ({ focused }) => (
-            <Icon icon="components" color={focused && colors.tint} size={30} />
-          ),
-        }}
-      />
-
-      <Tab.Screen
+      {/* <Tab.Screen
         name="ParkingScreen"
         component={BookingScreen}
         options={{
           tabBarLabel: "Parking",
+          tabBarIcon: ({ focused }) => (
+            <Icon icon="components" color={focused && colors.tint} size={30} />
+          ),
+        }}
+      /> */}
+      <Tab.Screen
+        name="VehicleScreen"
+        component={VehicleScreen}
+        options={{
+          tabBarLabel: "Vehicle",
           tabBarIcon: ({ focused }) => (
             <Icon icon="components" color={focused && colors.tint} size={30} />
           ),

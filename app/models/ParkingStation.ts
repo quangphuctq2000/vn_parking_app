@@ -6,4 +6,5 @@ export interface ParkingStation {
   description: string
   pricePerHour: number
   pricePerMonth: number
+  parkingLotNumber: number
 }

@@ -58,6 +58,7 @@ function App(props: AppProps) {
     authenticationStore: { authToken },
   } = useStores()
   api.apisauce.setHeader("Authorization", `Bearer ${authToken}`)
+   
 
   const [areFontsLoaded] = useFonts(customFontsToLoad)
 
