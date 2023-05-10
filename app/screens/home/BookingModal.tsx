@@ -5,6 +5,7 @@ import { Picker } from "@react-native-picker/picker"
 import { Vehicle } from "app/models/Vehicle"
 import { createMonthParking } from "app/utils/api/monthBooking"
 import { Linking } from "react-native"
+import { createBooking } from "app/utils/api/booking"
 
 export type BookingModalType = {
   open: Function
@@ -26,8 +27,9 @@ export const BookingModal = forwardRef((_props: Props, ref: ForwardedRef<Booking
   useEffect(() => {
     setVehicle(_props.vehicles[0])
   }, [])
-  const [vehicle, setVehicle] = useState(_props.vehicles[0])
+  const [vehicle, setVehicle] = useState<Vehicle>()
   const [selectedMonth, setSelectedMonth] = useState()
+  const [hoursBooking, setHoursBooking] = useState()
   const parkingStation = _props.parkingStation
 
   function open() {
@@ -88,16 +90,28 @@ export const BookingModal = forwardRef((_props: Props, ref: ForwardedRef<Booking
           ) : (
             <>
               <TextField
-                value={selectedMonth}
+                value={hoursBooking}
                 placeholder={"Chọn số giờ muốn đặt trước"}
                 paddingH-10
                 paddingB-10
-                onChangeText={() => {}}
+                onChangeText={(value) => {
+                  setHoursBooking(value as any)
+                }}
               />
               <Button
                 label="Đăng ký"
-                onPress={() => {
-                  console.log(selectedMonth)
+                onPress={async () => {
+                  try {
+                    const result = await createBooking(
+                      vehicle.identityNumber,
+                      Number(parkingStation.id),
+                      Number(hoursBooking),
+                    )
+                    Linking.openURL(result.data as string)
+                    console.log(result)
+                  } catch (error) {
+                    console.log(error)
+                  }
                 }}
               />
             </>
