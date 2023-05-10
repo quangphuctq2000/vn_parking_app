@@ -15,12 +15,14 @@ import { LoginScreen } from "../screens"
 import { DemoNavigator, TabParamList } from "./Navigator"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 import { SignupScreen } from "app/screens/SignupScreen"
+import { PaymentScreen } from "app/screens/PaymentScreen"
 
 export type AppStackParamList = {
   Welcome: undefined
   Login: undefined
   Signup: undefined
   Demo: NavigatorScreenParams<TabParamList>
+  Payment: undefined
 }
 const exitRoutes = Config.exitRoutes
 
@@ -44,6 +46,7 @@ const AppStack = observer(function AppStack() {
       {isAuthenticated ? (
         <>
           <Stack.Screen name="Demo" component={DemoNavigator} />
+          <Stack.Screen name="Payment" component={PaymentScreen} />
         </>
       ) : (
         <>

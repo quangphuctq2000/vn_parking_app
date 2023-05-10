@@ -9,9 +9,8 @@ import { AppNavigator, useNavigationPersistence } from "./navigators"
 import * as storage from "./utils/storage"
 import { customFontsToLoad } from "./theme"
 import { setupReactotron } from "./services/reactotron"
-import { firebase } from "@react-native-firebase/auth"
-import axios from "axios"
 import { api } from "./services/api"
+import auth from "@react-native-firebase/auth"
 
 setupReactotron({
   clearOnLoad: true,
@@ -55,15 +54,22 @@ function App(props: AppProps) {
     isRestored: isNavigationStateRestored,
   } = useNavigationPersistence(storage, NAVIGATION_PERSISTENCE_KEY)
   const {
-    authenticationStore: { authToken },
+    authenticationStore: { authToken, setAuthToken },
   } = useStores()
   api.apisauce.setHeader("Authorization", `Bearer ${authToken}`)
-   
 
   const [areFontsLoaded] = useFonts(customFontsToLoad)
 
-  const { rehydrated } = useInitialRootStore(() => {
-    setTimeout(hideSplashScreen, 500)
+  const { rehydrated } = useInitialRootStore(async () => {
+    auth().onAuthStateChanged(async (user) => {
+      hideSplashScreen()
+      if (!user) setAuthToken(undefined)
+      else {
+        const accessToken = await user.getIdToken()
+        console.log("accessToken", accessToken)
+        setAuthToken(accessToken)
+      }
+    })
   })
   if (!rehydrated || !isNavigationStateRestored || !areFontsLoaded) return null
 
@@ -75,8 +81,8 @@ function App(props: AppProps) {
   return (
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
       <AppNavigator
-        linking={linking}
-        initialState={initialNavigationState}
+        // linking={linking}
+        // initialState={initialNavigationState}
         onStateChange={onNavigationStateChange}
       />
     </SafeAreaProvider>

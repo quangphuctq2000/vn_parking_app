@@ -9,6 +9,7 @@ import { Button, TextField } from "react-native-ui-lib"
 import auth from "@react-native-firebase/auth"
 import { GoogleSignin } from "@react-native-google-signin/google-signin"
 import { api } from "app/services/api"
+import { useFocusEffect } from "@react-navigation/native"
 
 interface SignupScreenProps extends AppStackScreenProps<"Signup"> {}
 GoogleSignin.configure({
@@ -22,6 +23,10 @@ export const SignupScreen: FC<SignupScreenProps> = observer((_props) => {
   const {
     authenticationStore: { setAuthToken },
   } = useStores()
+
+  useFocusEffect(() => {
+    console.log("this is signup screen")
+  })
 
   async function signup() {
     try {
@@ -57,7 +62,8 @@ export const SignupScreen: FC<SignupScreenProps> = observer((_props) => {
       })
       console.log(signupResult)
 
-      if (signupResult.data.statusCode == 400) throw new Error()
+      if (signupResult.data.statusCode == 400 || signupResult.data.statusCode == 409)
+        throw new Error()
       api.apisauce.setHeader("Authorization", `Bearer ${accessToken}`)
       setAuthToken(accessToken)
     } catch (error) {

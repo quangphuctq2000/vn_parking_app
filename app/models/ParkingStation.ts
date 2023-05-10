@@ -7,4 +7,7 @@ export interface ParkingStation {
   pricePerHour: number
   pricePerMonth: number
   parkingLotNumber: number
+  freeParkingLotNumber: number
 }
+
+export interface ParkingStationResponseData {}

@@ -3,3 +3,4 @@ export interface Vehicle {
   identityNumber: string
   description: string
 }
+

@@ -1,6 +1,7 @@
 import { Instance, SnapshotOut, types } from "mobx-state-tree"
 import { GoogleSignin } from "@react-native-google-signin/google-signin"
 import { api } from "app/services/api"
+import auth from "@react-native-firebase/auth"
 
 export const AuthenticationStoreModel = types
   .model("AuthenticationStore")
@@ -27,15 +28,11 @@ export const AuthenticationStoreModel = types
     setAuthEmail(value: string) {
       store.authEmail = value.replace(/ /g, "")
     },
-    logout() {
-      store.authToken = undefined
-      store.authEmail = ""
-      GoogleSignin.signOut()
+    async logout() {
+      await auth().signOut()
       delete api.apisauce.headers["Authorization"]
     },
   }))
 
 export interface AuthenticationStore extends Instance<typeof AuthenticationStoreModel> {}
 export interface AuthenticationStoreSnapshot extends SnapshotOut<typeof AuthenticationStoreModel> {}
-
-// @demo remove-file

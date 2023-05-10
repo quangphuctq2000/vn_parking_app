@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react"
+import React, { FC, useEffect, useRef, useState } from "react"
 import { DemoTabScreenProps, TabParamList } from "../navigators/Navigator"
 import { useHeader } from "app/utils/useHeader"
 import { useStores } from "app/models"
@@ -11,6 +11,8 @@ import Geolocation from "@react-native-community/geolocation"
 import MapViewDirections from "react-native-maps-directions"
 import { Picker } from "@react-native-picker/picker"
 import { Vehicle } from "app/models/Vehicle"
+import { useFocusEffect } from "@react-navigation/native"
+import { ParkingStationModalType } from "./home/ParkingStationModal"
 
 interface LatLng {
   latitude: number
@@ -28,6 +30,10 @@ export const HomeScreen: FC<DemoTabScreenProps<"HomeScreen">> = (_props) => {
     leftText: "Home",
     rightText: "Log out",
     onRightPress: logout,
+  })
+
+  useFocusEffect(() => {
+    console.log("this is home screen" )
   })
   const [parkingStations, setParkingStations] = useState<ParkingStation[]>([])
   const [parkingStation, setParkingStation] = useState<ParkingStation>()
@@ -56,7 +62,8 @@ export const HomeScreen: FC<DemoTabScreenProps<"HomeScreen">> = (_props) => {
             setAuthToken(undefined)
           }
           console.log(result)
-          setVehicles([...result.data] as Vehicle[])
+          // setVehicles([...result.data] as Vehicle[])
+          setVehicles([{ id: 1, identityNumber: "22S1-17613" }] as Vehicle[])
         } catch (error) {
           console.log("error", error)
         }
@@ -92,6 +99,15 @@ export const HomeScreen: FC<DemoTabScreenProps<"HomeScreen">> = (_props) => {
       }
     })()
   }, [])
+
+  async function createMonthParking() {
+    try {
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const parkingStationModalRef = useRef<ParkingStationModalType>()
 
   return (
     <ScrollView>
@@ -184,7 +200,8 @@ export const HomeScreen: FC<DemoTabScreenProps<"HomeScreen">> = (_props) => {
                   Thông tin chi tiết:
                 </Text>
                 <Text flex center text60>
-                  {parkingStation.description}
+                  {/* {parkingStation.description} */}
+                  Hoạt động 24/7
                 </Text>
               </View>
               <View row spread paddingB-10>
@@ -192,7 +209,15 @@ export const HomeScreen: FC<DemoTabScreenProps<"HomeScreen">> = (_props) => {
                   Số chỗ đỗ xe mặc định:
                 </Text>
                 <Text flex center text60>
-                  {"parkingStation"}
+                  {"20"}
+                </Text>
+              </View>
+              <View row spread paddingB-10>
+                <Text text60 flex>
+                  Số chỗ đỗ xe còn trống:
+                </Text>
+                <Text flex center text60>
+                  {""}
                 </Text>
               </View>
               <View row spread paddingB-10>
