@@ -30,6 +30,7 @@ export const AuthenticationStoreModel = types
     },
     async logout() {
       await auth().signOut()
+      GoogleSignin.signOut()
       delete api.apisauce.headers["Authorization"]
     },
   }))

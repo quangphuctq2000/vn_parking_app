@@ -18,16 +18,19 @@ export function setAuthorizationHeader(value: string) {
 
 axiosInstance.interceptors.request.use(
   async function (config) {
-    const accessToken = await auth().currentUser.getIdToken()
-    console.log(accessToken)
+    console.log(auth().currentUser)
 
-    if (accessToken) {
-      config.headers["Authorization"] = `Bearer ${accessToken}`
+    if (auth().currentUser) {
+      const accessToken = await auth().currentUser.getIdToken()
+      console.log(accessToken)
+
+      if (accessToken) {
+        config.headers["Authorization"] = `Bearer ${accessToken}`
+      }
     }
     return config
   },
   function (error) {
-    // router.push({path:"/error"});
     throw error
   },
 )

@@ -10,6 +10,7 @@ import auth from "@react-native-firebase/auth"
 import { GoogleSignin } from "@react-native-google-signin/google-signin"
 import { api } from "app/services/api"
 import { useFocusEffect } from "@react-navigation/native"
+import { authWithGoogle, signup } from "app/utils/api/auth"
 
 interface SignupScreenProps extends AppStackScreenProps<"Signup"> {}
 GoogleSignin.configure({
@@ -17,8 +18,8 @@ GoogleSignin.configure({
 })
 
 export const SignupScreen: FC<SignupScreenProps> = observer((_props) => {
-  const [authPassword, setAuthPassword] = useState("")
-  const [authEmail, setAuthEmail] = useState("")
+  const [authPassword, setAuthPassword] = useState<string>()
+  const [authEmail, setAuthEmail] = useState<string>()
 
   const {
     authenticationStore: { setAuthToken },
@@ -28,23 +29,15 @@ export const SignupScreen: FC<SignupScreenProps> = observer((_props) => {
     console.log("this is signup screen")
   })
 
-  async function signup() {
+  async function signupUser() {
     try {
       const result = await auth().createUserWithEmailAndPassword(authEmail, authPassword)
-      console.log(result)
-
       const idToken = await result.user.getIdToken()
-
-      const signupResult = await api.apisauce.post("/auth/signup", {
-        token: idToken,
-        role: 2,
-      })
-      console.log(signupResult)
-
+      await signup(idToken)
       api.apisauce.setHeader("Authorization", `Bearer ${idToken}`)
       setAuthToken(idToken)
     } catch (error) {
-      console.log(error.message)
+      console.log("error", error)
 
       Alert.alert(error.message)
     }
@@ -54,22 +47,15 @@ export const SignupScreen: FC<SignupScreenProps> = observer((_props) => {
     try {
       const { idToken } = await GoogleSignin.signIn()
       const googleCredential = auth.GoogleAuthProvider.credential(idToken)
-      const result = await auth().signInWithCredential(googleCredential)
-      const accessToken = await result.user.getIdToken()
-      const signupResult = await api.apisauce.post("/auth/signup", {
-        token: accessToken,
-        role: 2,
-      })
-      console.log(signupResult)
-
-      if (signupResult.data.statusCode == 400 || signupResult.data.statusCode == 409)
-        throw new Error()
+      await auth().signInWithCredential(googleCredential)
+      const accessToken = await auth().currentUser.getIdToken()
+      const loginResponseData = await authWithGoogle(accessToken)
+      if (!loginResponseData) throw new Error()
       api.apisauce.setHeader("Authorization", `Bearer ${accessToken}`)
       setAuthToken(accessToken)
     } catch (error) {
       GoogleSignin.signOut()
-      Alert.alert("signup failed")
-      console.log(error)
+      Alert.alert("login failed")
     }
   }
 
@@ -91,7 +77,7 @@ export const SignupScreen: FC<SignupScreenProps> = observer((_props) => {
         marginB-10
       />
 
-      <Button onPress={signup} label={"Tap to sign up"} marginB-10 />
+      <Button onPress={() => signupUser()} label={"Tap to sign up"} marginB-10 />
 
       <Button onPress={continuteWithGoogle} label={"Continute with google"} marginB-10 />
     </Screen>

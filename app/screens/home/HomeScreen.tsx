@@ -10,11 +10,9 @@ import { api } from "app/services/api"
 import Geolocation from "@react-native-community/geolocation"
 import MapViewDirections from "react-native-maps-directions"
 import { Vehicle } from "app/models/Vehicle"
-import { useFocusEffect } from "@react-navigation/native"
 import { ParkingStationModal, ParkingStationModalType } from "./ParkingStationModal"
 import { getParkingStation } from "app/utils/api/parkingStation"
 import { BookingModal, BookingModalType } from "./BookingModal"
-import { WebView } from "react-native-webview"
 interface LatLng {
   latitude: number
   longitude: number
@@ -22,7 +20,6 @@ interface LatLng {
 const image = {
   uri: "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
 }
-const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 export const HomeScreen: FC<DemoTabScreenProps<"HomeScreen">> = (_props) => {
   const {
     authenticationStore: { logout, setAuthToken },
@@ -35,9 +32,6 @@ export const HomeScreen: FC<DemoTabScreenProps<"HomeScreen">> = (_props) => {
   const parkingStationModalRef = useRef<ParkingStationModalType>()
   const bookingModalRef = useRef<BookingModalType>()
 
-  useFocusEffect(() => {
-    console.log("this is home screen")
-  })
   const [parkingStations, setParkingStations] = useState<ParkingStation[]>([])
   const [parkingStation, setParkingStation] = useState<ParkingStation>()
   const [currentLocation, setCurrentLocation] = useState<LatLng>()
