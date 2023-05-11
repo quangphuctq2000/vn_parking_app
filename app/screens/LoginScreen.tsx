@@ -66,9 +66,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
       safeAreaEdges={["top", "bottom"]}
     >
       <Text testID="login-heading" tx="loginScreen.signIn" preset="heading" style={$signIn} />
-
       <TextField placeholder={"Email"} onChangeText={setAuthEmail} value={authEmail} marginB-10 />
-
       <TextField
         placeholder={"Password"}
         onChangeText={setAuthPassword}
@@ -77,11 +75,8 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
         value={authPassword}
         marginB-10
       />
-
       <Button onPress={signin} label={"Tap to sign in"} marginB-10 />
-
       <Button onPress={() => navigation.navigate("Signup")} label={"Tap to sign up"} marginB-10 />
-
       <Button onPress={continuteWithGoogle} label={"Continute with google"} marginB-10 />
     </Screen>
   )

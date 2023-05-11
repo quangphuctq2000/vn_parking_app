@@ -24,10 +24,12 @@ export const BookingModal = forwardRef((_props: Props, ref: ForwardedRef<Booking
   })
   const [bookingType, setBookingType] = useState<"month" | "normal">()
   const [showModal, setShowModal] = useState<boolean>(false)
+  const [vehicle, setVehicle] = useState<Vehicle>()
+  const [vehicles, setVehicles] = useState<Vehicle[]>()
   useEffect(() => {
     setVehicle(_props.vehicles[0])
-  }, [])
-  const [vehicle, setVehicle] = useState<Vehicle>()
+    setVehicles(_props.vehicles)
+  }, [_props.vehicles])
   const [selectedMonth, setSelectedMonth] = useState()
   const [hoursBooking, setHoursBooking] = useState()
   const parkingStation = _props.parkingStation
@@ -53,8 +55,8 @@ export const BookingModal = forwardRef((_props: Props, ref: ForwardedRef<Booking
             <Picker.Item label="Month" value="month" />
           </Picker>
           <Picker selectedValue={vehicle} onValueChange={(itemValue) => setVehicle(itemValue)}>
-            {_props.vehicles.length > 0
-              ? _props.vehicles.map((_vehicle, index) => (
+            {vehicles.length > 0
+              ? vehicles.map((_vehicle, index) => (
                   <Picker.Item label={_vehicle.identityNumber} value={_vehicle} key={index} />
                 ))
               : null}
@@ -74,6 +76,8 @@ export const BookingModal = forwardRef((_props: Props, ref: ForwardedRef<Booking
                 label="Đăng ký"
                 onPress={async () => {
                   try {
+                    console.log(vehicle)
+
                     const result = await createMonthParking(
                       Number(parkingStation.id),
                       vehicle.identityNumber,
